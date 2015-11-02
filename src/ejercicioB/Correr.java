@@ -80,7 +80,8 @@ public class Correr {
 	}
 /*
  * el programa no funciona porque se produce una situación de interbloqueo
- * ya que ambos hilos estan esperándose mutuamente a que el otro termine su ejecución
+ * ya que ambos hilos estan esperándose mutuamente a que el otro termine su ejecución.
+ * 
  */
 }
 
