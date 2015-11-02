@@ -45,11 +45,18 @@ class Llave_A extends Thread {
 			while(Puertecita.contador <= 10){
 				//while (!Puertecita.CerrojoB);
 				Puertecita.CerrojoA = true;
+				//abrimos el cerrojo
 				semaforoA.acquire();
+				//el valos del semáforo se pone a cero
+				//impidiendo que otro hilo acceda a los datos
 				System.out.println("LlaveA terminando");
 				Puertecita.contador++;
+				//incrementamos el contador
 				semaforoA.release();
+				//el valor del semáforo se pone a uno
+				//permitiendo la entrada de otro hilo a los datos
 				Puertecita.CerrojoA = false;
+				//se cierra el cerrojo
 			}
 			
 		}catch(InterruptedException e){
@@ -87,11 +94,18 @@ class Llave_B extends Thread {
 			while(Puertecita.contador <= 10){
 				//while (!Puertecita.CerrojoA);
 				Puertecita.CerrojoB = true;
-				semaforoB.acquire();//deja disponible la puerta
+				//abrimos el cerrojo
+				semaforoB.acquire();
+				//el valor del semáforo se pone acero
+				//impidiendo el acceso de otro hilo a los datos
 				System.out.println("LlaveB terminando");
 				Puertecita.contador++;
+				//incrementamos el contador
 				semaforoB.release();
+				//el valor del semáforo se pone a uno
+				//permitiendo el acceso de otro hilo a los datos
 				Puertecita.CerrojoB = false;
+				//cerramos el cerrojo
 			}
 			
 		}catch(InterruptedException e){
