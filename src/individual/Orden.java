@@ -6,26 +6,23 @@ public class Orden{
     public static void main(String[] args) {
 
         //Declaramos el semaforo dandole un valor incial de 0.
-        Semaphore letterFinish = new Semaphore(0);
+        Semaphore numberFinish = new Semaphore(0);
 
-        //Nuestro primer thread imprimira letras, cuando termine incrementara el valor del semaforo.
+        //Nuestro primer thread intentara restar uno al semaforo, como es cero no podra hasta que se terminen de
+        //Imprimir los numeros y se incremente en uno.
         Runnable letters = () -> {
+            numberFinish.acquireUninterruptibly();
             for (int i = 'a'; i <= 'j'; i++) {
                 System.out.println(Character.toChars(i));
             }
-
-            letterFinish.release();
         };
 
-
-        //Nuestro segundo thread intentara restar uno al semaforo, como es cero no podra hasta que se terminen de
-        //Imprimir las letras y se incremente en uno.
+        //Nuestro segundo thread imprimira numeros, cuando termine incrementara el valor del semaforo.
         Runnable numbers = () -> {
-            letterFinish.acquireUninterruptibly();
-
             for (int i = 1; i <= 10; i++) {
                 System.out.println(i);
             }
+            numberFinish.release();
         };
 
         //Instanciamos los dos Threads.
