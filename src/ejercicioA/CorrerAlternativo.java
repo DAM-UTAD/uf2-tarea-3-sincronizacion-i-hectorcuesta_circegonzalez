@@ -4,8 +4,8 @@ package ejercicioA;
 //Se intentara abrir o cerrar la puerta respectivamente, en caso de que ya este cerrada o abierta, incrementaremos el
 //contador de "colisiones", esto basicamente nos indicara las veces que se ha adelantado un thread respecto a el otro.
 
-//Como se puede ver planteamos el arreglo del programa mediante el uso de dos Semaphore, nos seguira indicando, que
-//el resultado final es 1 por el simple motivo de que la puerta empieza como abierta y primero lanzamos el thread abrir.
+//Como se puede ver planteamos el arreglo del programa mediante el uso de dos Semaphore, para controlar si la puerta
+//esta abierta o cerrada.
 //Indicar que esta solucion no la considero la mas correcta por que el uso de multiples semaphores implica el riesgo
 //de existir DeadLocks, en su lugar yo usaria CyclicBarrier.
 
@@ -101,7 +101,7 @@ class CerrarA extends Thread {
 public class CorrerAlternativo {
     public static void main(String[] args) throws InterruptedException {
         PuertaA puerta = new PuertaA();
-        puerta.wasJustOpened.acquire();
+        puerta.wasJustClosed.acquire();
         puerta.abierta = true;
 
         //Instanciamos ambos thread.
