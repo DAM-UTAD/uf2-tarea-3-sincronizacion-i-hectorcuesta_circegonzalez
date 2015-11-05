@@ -2,13 +2,6 @@ package ejercicioB;
 
 import java.util.concurrent.Semaphore;
 
-/**
- * clase para gestionar los datos compartidos a los que acceden los distintos
- * hilos
- * 
- * @author circe.gonzalez
- *
- */
 class Puertecita {
 	/**
 	 * variables estáticas que contienen los datos que usarán en su ejecución
@@ -16,7 +9,7 @@ class Puertecita {
 	 */
 	public static boolean CerrojoA;
 	public static boolean CerrojoB;
-	public static int contador;
+	public static int  tiempo, contadorA, contadorB;
 }
 
 /**
@@ -41,31 +34,34 @@ class Llave_A extends Thread {
 	}
 
 	public void run() {
-		try{
-			while(Puertecita.contador <= 10){
-				//while (!Puertecita.CerrojoB);
-				Puertecita.CerrojoA = true;
-				//abrimos el cerrojo
-				semaforoA.acquire();
-				//el valos del semáforo se pone a cero
-				//impidiendo que otro hilo acceda a los datos
-				System.out.println("LlaveA terminando");
-				Puertecita.contador++;
-				//incrementamos el contador
-				semaforoA.release();
-				//el valor del semáforo se pone a uno
-				//permitiendo la entrada de otro hilo a los datos
-				Puertecita.CerrojoA = false;
-				//se cierra el cerrojo
+		for (int i = 0; i < 100; i++) {
+			try {
+				if (!Puertecita.CerrojoB) {
+					// mientras el cerrojo B esté cerrado, se podrá abrir el cerrojo
+					// A
+					semaforoA.acquire();
+					// el semáforo nos permite abrir la puerta
+					Puertecita.CerrojoA = true;
+					System.out.println("Llave A abriendo la puerta");
+					Puertecita.contadorA++;
+					// sumamos uno al contador que se encuentra al otro lado de la
+					// puerta
+					Puertecita.tiempo ++;
+					i++;
+					semaforoA.release();
+					// salimos y liberamos el semáforo
+					Puertecita.CerrojoA = false;
+					// cerramos el cerrojo A
+				
+				}
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			
-		}catch(InterruptedException e){
-			e.printStackTrace();
+		}
 		}
 		
-			
-	
-	}
 }
 
 /**
@@ -90,54 +86,66 @@ class Llave_B extends Thread {
 	}
 
 	public void run() {
-		try{
-			while(Puertecita.contador <= 10){
-				//while (!Puertecita.CerrojoA);
-				Puertecita.CerrojoB = true;
-				//abrimos el cerrojo
-				semaforoB.acquire();
-				//el valor del semáforo se pone acero
-				//impidiendo el acceso de otro hilo a los datos
-				System.out.println("LlaveB terminando");
-				Puertecita.contador++;
-				//incrementamos el contador
-				semaforoB.release();
-				//el valor del semáforo se pone a uno
-				//permitiendo el acceso de otro hilo a los datos
-				Puertecita.CerrojoB = false;
-				//cerramos el cerrojo
-			}
-			
-		}catch(InterruptedException e){
-			e.printStackTrace();
-		}
-	}
-	
-}
+		for (int i = 0; i < 100; i++) {
+			try {
+				if (!Puertecita.CerrojoA) {
+					// mientras el cerrojo A esté cerrado, se podrá abrir el cerrojo
+					// B
+						//si el hilo se encuentra que ambos cerrojos están
+						semaforoB.acquire();
+						// el semáforo nos permite abrir la puerta
+						Puertecita.CerrojoB = true;
+						// abrimos el cerrojo B
+						System.out.println("Llave B abriendo la puerta");
+						Puertecita.contadorB++;
+						Puertecita.tiempo ++;
+						i++;
+						// sumamos uno al contador que está al otro lado de la puerta
+						semaforoB.release();
+						// liberamos el semáforo
+						Puertecita.CerrojoB = false;
+						// cerramos el cerrojo B
+					
+					
+				}
 
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		}
+		
+}
 /**
  * Created by H3ku on 30/10/15. hilo principal
  */
 public class CorrerAlternativo {
 	public static void main(String[] args) throws InterruptedException {
 		Semaphore semaforo = new Semaphore(1);
-		//creamos un semáforo binario
+		// creamos un semáforo que compartirán los hilos para gestionar su
+		// acceso al otro lado de la puerta
 		Puertecita.CerrojoA = false;
 		Puertecita.CerrojoB = false;
-		//establecemos los cerrojos en cerrado
-		Puertecita.contador =0;
-		//creamos un contador general
-		Llave_A llaveA = new Llave_A(semaforo);
-		Llave_B llaveB = new Llave_B(semaforo);
-		//creamos los hilos de ambas llaves
-		System.out.println("comienzo del hilo principal");
-		llaveA.start();
-		llaveB.start();
-		//iniciamos los hilos de ambas llaves
-		System.out.println("fin del hilo principal");
-		llaveA.join();
-		llaveB.join();
-		System.out.println(Puertecita.contador);
+		//el programa comienza con ambos cerrojos cerrados
+		
+		//creamos los hilos
+		int i = 0;
+		while(i <100){
+			Llave_A llaveA = new Llave_A(semaforo);
+			Llave_B llaveB = new Llave_B(semaforo);
+			llaveA.start();
+			llaveB.start();
+			//iniciamos los hilos
+			llaveA.join();
+			llaveB.join();
+			i++;
+		}
+		
+	/*
+	 * comparando ambos contadores podremos ver qué hilos van más rápido.
+	 */
+		System.out.println("Contador A: "+ Puertecita.contadorA);
+		System.out.println("Contador B: "+ Puertecita.contadorB);
 	}
 }
 //---
